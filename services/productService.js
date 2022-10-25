@@ -6,6 +6,24 @@ function productService(Product) {
     response.messages = messages;
     return response;
   }
+  const getPagination = (page, size) => {
+    if (size) {
+      if (size > 20) {
+        // eslint-disable-next-line no-param-reassign
+        size = 20;
+      }
+    }
+    if (page) {
+      if (page < 1) {
+        // eslint-disable-next-line no-param-reassign
+        page = 1;
+      }
+    }
+    const limit = size ? +size : 3;
+    const offset = (page) ? (page - 1) * limit : 0;
+
+    return { limit, offset };
+  };
 
   function post(req, res) {
     const product = new Product(req.body);
@@ -35,19 +53,26 @@ function productService(Product) {
   }
   function get(req, res) {
     const query = {};
+
     if (req.query.name) {
       query.name = req.query.name;
     }
     if (req.query.cateogryID) {
       query.cateogryID = req.query.cateogryID;
     }
-    Product.find(query, (err, products) => {
+
+    const { page, size } = req.query;
+
+    const { limit, offset } = getPagination(page, size);
+
+    Product.paginate(query, { offset, limit }, (err, products) => {
       if (err) {
         return res.send(serviceResponse(false, null, [err.message]));
       }
       return res.json(serviceResponse(true, products, []));
     });
   }
+
   function getById(req, res) {
     return res.json(serviceResponse(true, req.product, []));
   }
