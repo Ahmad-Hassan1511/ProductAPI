@@ -22,7 +22,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(cors({
-  //origin: ['https://www.mysite.io'],
+  origin: ['https://productsitetests.herokuapp.com'],
   methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
 }));
 
